@@ -1,0 +1,21 @@
+<lcgdict>
+	<!-- RooUnfold objects -->
+	<class name="RooUnfold" />
+	<class name="RooUnfoldBayes" />
+	<class name="RooUnfoldBinByBin" />
+<!--	<class name="RooUnfoldDagostini" />-->
+	<class name="RooUnfoldErrors" />
+	<class name="RooUnfoldInvert" />
+	<class name="RooUnfoldParms" />
+	<class name="RooUnfoldResponse" />
+	<class name="RooUnfoldSvd" />
+	<class name="RooUnfoldTUnfold" />
+
+
+	<!-- MinervaUnfold objects -->
+	<class name="MinervaUnfold::MnvResponse" />
+	<class name="MinervaUnfold::MnvUnfold" />
+
+	<!-- STL collections -->
+	<class name="std::map&lt;std::string, std::string&gt;" />
+</lcgdict>

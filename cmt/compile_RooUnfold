@@ -1,0 +1,30 @@
+#!/bin/sh
+
+COMMAND=$1; shift
+IWASHERE=$PWD
+
+echo ----------------- compile_UnfoldUtils ----------------- 
+echo command: $COMMAND
+
+case ${COMMAND} in
+compile)
+  echo -e "Starting UnfoldUtils Compilation..."
+  echo -e "Compiling RooUnfold Directory..."
+  cd $UNFOLDUTILSROOT
+  make
+  echo -e "Compiling MinervaUnfold Directory..."
+  cd $UNFOLDUTILSROOT/MinervaUnfold
+  make
+  ;;
+clean)
+  echo "cleaning UnfoldUtils..."
+  cd $UNFOLDUTILSROOT
+  make clean
+  rm -rf ../$CMTCONFIG/libRooUnfold.so
+  cd $UNFOLDUTILSROOT/MinervaUnfold
+  make clean
+  ;;
+
+esac
+
+cd $IWASHERE
