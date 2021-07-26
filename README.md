@@ -9,7 +9,7 @@ If you are a MINERvA collaborator, just install [MAT-MINERvA](https://github.com
 Requires at least CMake 3.
 
 ```
-git clone TODO
+git clone git@github.com:MinervaExpt/UnfoldUtils.git
 mkdir -p opt/build && cd opt/build
 cmake ../../MAT -DCMAKE_INSTALL_PREFIX=`pwd`/.. -DCMAKE_BUILD_TYPE=Release
 make install #-j 4
