@@ -158,7 +158,7 @@ install(TARGETS G__${PROJECT_NAME}Dict EXPORT ${PROJECT_NAME}Targets DESTINATION
 
 #Now, build libUnfoldUtils.  Note that this builds the ROOT dictionary for PlotUtils into libplotutils itself.
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
-target_link_libraries(${PROJECT_NAME} ${ROOT_LIBRARIES} MAT MAT-MINERvA)
+target_link_libraries(${PROJECT_NAME} ${ROOT_LIBRARIES} MAT MAT-MINERvA G__${PROJECT_NAME}Dict)
 install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}Targets DESTINATION lib)
 install(FILES ${MNV_HEADER_FILES} DESTINATION include/MinervaUnfold)
 install(FILES ${ROO_HEADER_FILES} DESTINATION include/RooUnfold)
@@ -168,7 +168,7 @@ add_executable(TransWarpExtraction macros/TransWarpExtraction.cxx)
 target_link_libraries(TransWarpExtraction ${ROOT_LIBRARIES} MAT MAT-MINERvA ${PROJECT_NAME} G__${PROJECT_NAME}Dict)
 install(TARGETS TransWarpExtraction DESTINATION bin)
 
-export(TARGETS ${PROJECT_NAME} FILE ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake)
+export(TARGETS ${PROJECT_NAME} G__${PROJECT_NAME}Dict FILE ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake)
 
 #add_subdirectory(python) #TODO: Copy this configuration over from PlotUtils if I ever need it
 
