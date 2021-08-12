@@ -131,7 +131,7 @@ RooUnfold/matrix_mult_mt.h
 #Include build system for the rest of this project.  Add new top-level directories here.
 #First, build a ROOT dictionary
 #I modified this dictionary generation code from Heidi's CMakeLists.txt
-REFLEX_GENERATE_DICTIONARY(G__${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/dict/${PROJECT_NAME}Dict.h SELECTION ${CMAKE_CURRENT_SOURCE_DIR}/dict/${PROJECT_NAME}Dict.xml OPTIONS -D__GCC_XML__)
+REFLEX_GENERATE_DICTIONARY(G__${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/dict/${PROJECT_NAME}Dict.h SELECTION ${CMAKE_CURRENT_SOURCE_DIR}/dict/${PROJECT_NAME}Dict.xml OPTIONS -D__GCC_XML__ --noIncludePaths)
 
 #install the dictionary files ROOT generates where LD_LIBRARY_PATH can find them
 #(after sourcing setup.sh of course)
@@ -150,12 +150,14 @@ else(${ROOT_VERSION} VERSION_GREATER 6)
   set(DICTIONARY_NAME G__${PROJECT_NAME}_dict.cpp)
 endif(${ROOT_VERSION} VERSION_GREATER 6)
 
-#The secret ingredient to producing PlotUtils_dict.o seems to be creating an OBJECT library.
-add_library(${PROJECT_NAME}_dict OBJECT ${CMAKE_CURRENT_BINARY_DIR}/${DICTIONARY_NAME})
-#install(TARGETS ${PROJECT_NAME}_dict EXPORT ${PROJECT_NAME}Targets OBJECTS DESTINATION lib) 
+#Build a library from the dictionary source code ROOT generated.  I'll need it both to load
+#this project into the interpreter and to put some more information into libMAT-MINERvA.so.
+add_library(G__${PROJECT_NAME}Dict SHARED ${CMAKE_CURRENT_BINARY_DIR}/${DICTIONARY_NAME})
+target_link_libraries(G__${PROJECT_NAME}Dict ${ROOT_LIBRARIES})
+install(TARGETS G__${PROJECT_NAME}Dict EXPORT ${PROJECT_NAME}Targets DESTINATION lib)
 
 #Now, build libUnfoldUtils.  Note that this builds the ROOT dictionary for PlotUtils into libplotutils itself.
-add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} $<TARGET_OBJECTS:${PROJECT_NAME}_dict>)
+add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
 target_link_libraries(${PROJECT_NAME} ${ROOT_LIBRARIES} MAT MAT-MINERvA)
 install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}Targets DESTINATION lib)
 install(FILES ${MNV_HEADER_FILES} DESTINATION include/MinervaUnfold)
@@ -163,7 +165,7 @@ install(FILES ${ROO_HEADER_FILES} DESTINATION include/RooUnfold)
 install(EXPORT ${PROJECT_NAME}Targets DESTINATION lib/cmake/${PROJECT_NAME})
 
 add_executable(TransWarpExtraction macros/TransWarpExtraction.cxx)
-target_link_libraries(TransWarpExtraction ${ROOT_LIBRARIES} MAT MAT-MINERvA ${PROJECT_NAME})
+target_link_libraries(TransWarpExtraction ${ROOT_LIBRARIES} MAT MAT-MINERvA ${PROJECT_NAME} G__${PROJECT_NAME}Dict)
 install(TARGETS TransWarpExtraction DESTINATION bin)
 
 export(TARGETS ${PROJECT_NAME} FILE ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake)
