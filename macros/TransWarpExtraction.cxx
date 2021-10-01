@@ -1584,7 +1584,7 @@ int main( int argc, char **argv)
   #endif
   TH1::AddDirectory(false);
 
-  const char* const short_options = "o:D:d:I:i:M:m:R:r:T:t:n:lLu:z:c:C:p:P:f:x:s:vVh";
+  const char* const short_options = "o:D:d:I:i:M:m:R:r:T:t:n:lLu:z:c:C:p:P:f:x:s:vVhb";
   static struct option long_options[]=
   {
     {"output_file",     required_argument, nullptr ,'o'},
