@@ -1779,6 +1779,7 @@ int main( int argc, char **argv)
     case 1: 
     {
       TransWarpExtraction< MnvH1D > excelsior(data_file, data, data_truth_file, data_truth, reco_file, reco, truth_file, truth, migration_file, migration, iterations, exclude_chi2_bins, random_seed, num_uni, bIterLogScale );
+      excelsior.m_fakes=fakes;
       excelsior.ClearInputErrorBands();
       excelsior.ScalePOT( pot_scale ); 
       excelsior.ScaleDataPOT( data_pot_norm ); 
@@ -1799,6 +1800,7 @@ int main( int argc, char **argv)
     case 2: 
     {
       TransWarpExtraction< MnvH2D > excelsior(data_file, data, data_truth_file, data_truth, reco_file, reco, truth_file, truth, migration_file, migration, iterations, exclude_chi2_bins, random_seed, num_uni, bIterLogScale );
+      excelsior.m_fakes=fakes;
       excelsior.ClearInputErrorBands();
       excelsior.ScalePOT( pot_scale ); 
       excelsior.ScaleDataPOT( data_pot_norm );
