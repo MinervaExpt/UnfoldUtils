@@ -39,13 +39,15 @@ namespace PlotUtils
       bool UnfoldData( MnvH3D* &h_data_unfolded, MnvH3D* stat_varied, MnvH3D* h_reco, MnvH3D* h_truth, MnvH2D* h_migration, int num_iter ); 
       TMatrixD UnfoldDummy( MnvH1D* stat_varied, MnvH1D* h_data_unfolded, MnvH1D* h_reco, MnvH1D* h_truth, MnvH2D* h_migration, int num_iter ); 
       TMatrixD UnfoldDummy( MnvH2D* stat_varied, MnvH2D* h_data_unfolded, MnvH2D* h_reco, MnvH2D* h_truth, MnvH2D* h_migration, int num_iter ); 
-      TMatrixD UnfoldDummy( MnvH3D* stat_varied, MnvH3D* h_data_unfolded, MnvH3D* h_reco, MnvH3D* h_truth, MnvH2D* h_migration, int num_iter ); 
+      TMatrixD UnfoldDummy( MnvH3D* stat_varied, MnvH3D* h_data_unfolded, MnvH3D* h_reco, MnvH3D* h_truth, MnvH2D* h_migration, int num_iter );
+    bool UnfoldDataWithFakes( MnvH* &h_data_unfolded, MnvH* stat_varied, MnvH* h_reco, MnvH* h_truth, MnvH2D* h_migration, int num_iter);
       void CalcChi2();
       void MakeBinChi2Dists();
       void MakeMedianChi2Dists( double percentile = 0.5 );
       void MakeTruncatedChi2Dists( double nStdDev = 2.0 );
       void MakeErrorHists( );
       void MakeRatioHists( );
+    bool m_fakes = false;
   
     protected:
       MnvH* throwStat(MnvH* hist, TRandom3 *gen, int myuni, std::string prefix);
