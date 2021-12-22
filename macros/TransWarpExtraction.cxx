@@ -696,6 +696,19 @@ namespace PlotUtils
         unfoldingCovMatrixOrig[m_exclude_chi2_bins[bin]][i] = 0;
       }
     }
+
+    if( m_corr_factor > 0 ) {
+      double uncmod  = (1. + 1./m_corr_factor); // To apply to the covariance matrix
+      double sqrtmod = sqrt(uncmod);            // To apply to the diagonal error
+
+      // Scale covariance matrix
+      unfoldingCovMatrixOrig *= uncmod;
+
+      // Scale diagonal errors
+      for ( int i = 0; i < h_data_unfolded->GetNbinsX()+2; ++i )
+	h_data_unfolded -> SetBinError(i, h_data_unfolded->GetBinError(i) * sqrtmod);
+    }
+
     m_unfoldingCovMatrices[num_iter].push_back(unfoldingCovMatrixOrig);
     h_data_unfolded->PushCovMatrix("unfoldingCov",unfoldingCovMatrixOrig);
     
@@ -750,6 +763,19 @@ namespace PlotUtils
         unfoldingCovMatrixOrig[m_exclude_chi2_bins[bin]][i] = 0;
       }
     }
+
+    if( m_corr_factor > 0 ) {
+      double uncmod  = (1. + 1./m_corr_factor); // To apply to the covariance matrix
+      double sqrtmod = sqrt(uncmod);            // To apply to the diagonal error
+
+      // Scale covariance matrix
+      unfoldingCovMatrixOrig *= uncmod;
+
+      // Scale diagonal errors
+      for ( int i = 0; i < h_data_unfolded->GetNbinsX()+2; ++i )
+	h_data_unfolded -> SetBinError(i, h_data_unfolded->GetBinError(i) * sqrtmod);
+    }
+
     m_unfoldingCovMatrices[num_iter].push_back(unfoldingCovMatrixOrig);
     h_data_unfolded->PushCovMatrix("unfoldingCov",unfoldingCovMatrixOrig);
 
@@ -1608,6 +1634,7 @@ int main( int argc, char **argv)
     {"pot_scale",       required_argument, nullptr, 'p'},
     {"data_pot_norm",   required_argument, nullptr, 'P'},
     {"stat_scale",      required_argument, nullptr, 'f'},
+    {"corr_factor",     required_argument, nullptr, 'F'},
     {"exclude_bins",    required_argument, nullptr, 'x'},
     {"random_seed",     required_argument, nullptr, 's'},
     {"verbhist",        no_argument,       nullptr, 'V'},
@@ -1629,17 +1656,18 @@ int main( int argc, char **argv)
   std::string num_iter        ;
   std::string exclude_bins    ;
   bool bIterLogScale = false;
-  bool fakes = false;
-  bool bLinearize = false;
-  int num_uni      = 1;
-  int num_dim      = 1;
-  double max_chi2  = 5000;
-  double step_chi2 = 50;
-  double pot_scale = 1.0;
+  bool fakes         = false;
+  bool bLinearize    = false;
+  int num_uni  = 1;
+  int num_dim  = 1;
+  double max_chi2      = 5000;
+  double step_chi2     = 50;
+  double pot_scale     = 1.0;
   double data_pot_norm = 1.0;
-  double stat_scale = -999; //Negative means standard throwing
-  int random_seed = -1;
-  bool verbhist    = false;
+  double stat_scale    = -999; //Negative means standard throwing
+  double corr_factor   = -999; //Negative means no correction in covariance matrix and unfolded histogram
+  int random_seed      = -1;
+  bool verbhist        = false;
 
   int cc;
   while ((cc = getopt_long(argc, argv, short_options, long_options, nullptr)) != -1) {
@@ -1666,6 +1694,7 @@ int main( int argc, char **argv)
       case 'p': pot_scale       = atof(optarg); break;
       case 'P': data_pot_norm   = atof(optarg); break;
       case 'f': stat_scale      = atof(optarg); break;
+      case 'F': corr_factor     = atof(optarg); break;
       case 'V': verbhist        = true; break;
       case 'x': exclude_bins    = std::string(optarg); break;
       case 's': random_seed     = atoi(optarg); break;
@@ -1716,6 +1745,8 @@ int main( int argc, char **argv)
              << "|                         : You'll want to use this to scale your data              |" << std::endl
              << "|                         : to the entire ME playlist, for example                  |" << std::endl
 	     << "|   -f, --stat_scale      : Used to rescale unctertainty in migration matrix bins   |" << std::endl
+	     << "|   -F, --corr_factor     : Used to apply a correction to the covariance matrix     |" << std::endl
+	     << "|                         : and the diagonal uncertainty of the unfolded histogram  |" << std::endl
              << "|   -x, --exclude_bins    : List of global bins to exclude from chi2 calculation    |" << std::endl
              << "|                         : Can input bins, comma separated                         |" << std::endl
              << "|                         : Use FindBin(x,y,z) to get global bin number             |" << std::endl
@@ -1739,17 +1770,17 @@ int main( int argc, char **argv)
   if( !opt_truth_file  )     { std::cout<<"Need an truth file (-T, --truth_file )"<<std::endl             ; return 1 ; }
 
   std::cout << " Output File:               " << output_file    << std::endl
-            << " Data File:                 " << data_file      << std::endl
-            << " Data Histogram Name:       " << data           << std::endl
+            << " Data File:                 " << data_file       << std::endl
+            << " Data Histogram Name:       " << data            << std::endl
             << " Data Truth File:           " << data_truth_file << std::endl
             << " Data Truth Histogram Name: " << data_truth      << std::endl
-            << " Migration File:            " << migration_file << std::endl
-            << " Migration Histogram Name:  " << migration      << std::endl
-            << " MC Reco File:              " << reco_file      << std::endl
-            << " MC Reco Histogram Name:    " << reco           << std::endl
-            << " MC Truth File:             " << truth_file     << std::endl
-            << " MC Truth Histogram Name:   " << truth          << std::endl
-            << " Number of iterations:      " << num_iter       << std::endl
+            << " Migration File:            " << migration_file  << std::endl
+            << " Migration Histogram Name:  " << migration       << std::endl
+            << " MC Reco File:              " << reco_file       << std::endl
+            << " MC Reco Histogram Name:    " << reco            << std::endl
+            << " MC Truth File:             " << truth_file      << std::endl
+            << " MC Truth Histogram Name:   " << truth           << std::endl
+            << " Number of iterations:      " << num_iter        << std::endl
             << " Iteration Log Scale:       " << (int)bIterLogScale << std::endl
             << " Linearized Hists:          " << (int)bLinearize    << std::endl
             << " Number of Stat Universes:  " << num_uni        << std::endl
@@ -1757,11 +1788,12 @@ int main( int argc, char **argv)
             << " Max Chi2:                  " << max_chi2       << std::endl
             << " Step Chi2:                 " << step_chi2      << std::endl
             << " Data POT/MC POT:           " << pot_scale      << std::endl
-            << " Data POT Scale:            " << data_pot_norm << std::endl
+            << " Data POT Scale:            " << data_pot_norm  << std::endl
             << " Stat. Unc. Scale:          " << stat_scale     << std::endl
-            << " Excluded Bins:             " << exclude_bins  << std::endl
-            << " Random Seed (if -1 random) " << random_seed   << std::endl
-            << " With Fakes?                " << fakes         << std::endl;;
+	    << " Correction Factor:         " << corr_factor    << std::endl
+            << " Excluded Bins:             " << exclude_bins   << std::endl
+            << " Random Seed (if -1 random) " << random_seed    << std::endl
+            << " With Fakes?                " << fakes          << std::endl;;
   
   //Splicing up the number of iterations
   std::vector<std::string> str_iterations;
@@ -1786,6 +1818,7 @@ int main( int argc, char **argv)
       //      excelsior.ScaleMigStatUnc( stat_scale );
       excelsior.SetChi2MaxAndStep( max_chi2, step_chi2 );
       excelsior.SetStatScale(stat_scale);
+      excelsior.SetCorrFactor(corr_factor);
       excelsior.Setup2DChi2Hists();
       excelsior.UnfoldStatUniverses( );
       excelsior.CalcChi2( );
@@ -1807,6 +1840,7 @@ int main( int argc, char **argv)
       //      excelsior.ScaleMigStatUnc( stat_scale ); 
       excelsior.SetChi2MaxAndStep( max_chi2, step_chi2 );
       excelsior.SetStatScale(stat_scale);
+      excelsior.SetCorrFactor(corr_factor);
       excelsior.Setup2DChi2Hists();
       excelsior.UnfoldStatUniverses( );
       excelsior.CalcChi2( );
@@ -1830,6 +1864,7 @@ int main( int argc, char **argv)
       excelsior.ScaleDataPOT( data_pot_norm ); 
       excelsior.SetChi2MaxAndStep( max_chi2, step_chi2 );
       excelsior.SetStatScale(stat_scale);
+      excelsior.SetCorrFactor(corr_factor);
       excelsior.Setup2DChi2Hists();
       excelsior.UnfoldStatUniverses( );
       //excelsior.CalcChi2( );//This doesn't exist for 3d yet.  So until then...

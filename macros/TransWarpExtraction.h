@@ -29,6 +29,7 @@ namespace PlotUtils
       void ClearInputErrorBands();
       void SetChi2MaxAndStep( double MaxChi2, double Chi2Step ){ m_ChiSquareGuess = MaxChi2; m_ChiSquareStep = Chi2Step; }; 
       void SetStatScale( double stat_scale ){ m_stat_scale = stat_scale; }; 
+      void SetCorrFactor( double corr_factor ){ m_corr_factor = corr_factor; }; 
       void ScalePOT( double pot_scale ); 
       void ScaleDataPOT( double data_pot_scale ); 
       void ScaleMigStatUnc( double stat_scale );
@@ -61,6 +62,7 @@ namespace PlotUtils
       void FillChi2Dists( int stat_uni, MnvH* h_data_unfolded, MnvH* input_truth, MnvH* unfoldtruth, int num_iter );
 
       double m_stat_scale;
+      double m_corr_factor;
       bool doTailAvgThrows;
       uint m_nStatUniverses;
       double m_ChiSquareGuess;
