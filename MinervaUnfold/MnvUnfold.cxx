@@ -468,9 +468,9 @@ bool MnvUnfold::UnfoldHisto( MnvH1D*& h_unfold, TMatrixD& covmx, const MnvH2D *h
     int correctNbins=h_unfold->fN;
     int matrixRows=statcov.GetNrows();
     if(correctNbins!=matrixRows){
-      //      cout << "****************************************************************************" << endl;
-      //      cout << "*  Fixing unfolding matrix size because of RooUnfold bug. From " << matrixRows << " to " << correctNbins << endl;
-      //      cout << "****************************************************************************" << endl;
+            std::cout << "****************************************************************************" << std::endl;
+            std::cout << "*  Fixing unfolding matrix size because of RooUnfold bug. From " << matrixRows << " to " << correctNbins << std::endl;
+            std::cout << "****************************************************************************" << std::endl;
       // It looks like this DTRT, since the extra last two bins don't have any content
       statcov.ResizeTo(correctNbins, correctNbins);
     }
@@ -1130,9 +1130,9 @@ bool MnvUnfold::UnfoldHisto2D(MnvH2D* &h_unfold, const MnvH2D *h_migration, cons
     int correctNbins=h_unfold->fN;
     int matrixRows=statcov.GetNrows();
     if(correctNbins!=matrixRows){
-      //      cout << "****************************************************************************" << endl;
-      //      cout << "*  Fixing unfolding matrix size because of RooUnfold bug. From " << matrixRows << " to " << correctNbins << endl;
-      //      cout << "****************************************************************************" << endl;
+            std::cout << "****************************************************************************" << std::endl;
+            std::cout << "*  Fixing 2D unfolding matrix size because of RooUnfold bug. From " << matrixRows << " to " << correctNbins << std::endl;
+            std::cout << "****************************************************************************" << std::endl;
       // It looks like this DTRT, since the extra last two bins don't have any content
       statcov.ResizeTo(correctNbins, correctNbins);
     }
