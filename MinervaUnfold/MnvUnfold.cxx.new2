@@ -1,7 +1,7 @@
 #ifndef MNV_MnvUnfold_cxx 
 #define MNV_MnvUnfold_cxx 1
 // HMS if you are getting strange behavior, uncomment this to have code stop when it hits an error
-//#define UNFDBG
+#define UNFDBG
 #include "MinervaUnfold/MnvUnfold.h"
 
 //RooUnfold dependencies
@@ -437,15 +437,15 @@ bool MnvUnfold::UnfoldHisto( MnvH1D*& h_unfold, TMatrixD& covmx, const MnvH2D *h
   }
   else
   {
-    
+
     //create the output unfold histogram if needed
     if( 0 == h_unfold )
     {
       std::cout << " no h_unfold so casting to TH1D " << std::endl;
       //do not copy the error bands, so cast to TH1D.
       //The TH1D constructor doesn't set bin width, so manually set it
-      h_unfold = new MnvH1D( *dynamic_cast<const TH1D*>(h_migration->ProjectionY()) ); //HMS for nonsquare
-      h_unfold->SetNormBinWidth( h_migration->ProjectionY()->GetNormBinWidth() );//HMS for nonsquare
+      h_unfold = new MnvH1D( *dynamic_cast<const TH1D*>(h_migration->ProjectionY()) );
+      h_unfold->SetNormBinWidth( h_migration->ProjectionY()->GetNormBinWidth() );
       h_unfold->SetName( Form( "%s_unfold", h_data_nobck->GetName() ) );
       h_unfold->SetDirectory(0);
     }
@@ -469,9 +469,9 @@ bool MnvUnfold::UnfoldHisto( MnvH1D*& h_unfold, TMatrixD& covmx, const MnvH2D *h
     int correctNbins=h_unfold->fN;
     int matrixRows=statcov.GetNrows();
     if(correctNbins!=matrixRows){
-            std::cout << "****************************************************************************" << std::endl;
-            std::cout << "*  Fixing unfolding matrix size because of RooUnfold bug. From " << matrixRows << " to " << correctNbins << std::endl;
-            std::cout << "****************************************************************************" << std::endl;
+      //      cout << "****************************************************************************" << endl;
+      //      cout << "*  Fixing unfolding matrix size because of RooUnfold bug. From " << matrixRows << " to " << correctNbins << endl;
+      //      cout << "****************************************************************************" << endl;
       // It looks like this DTRT, since the extra last two bins don't have any content
       statcov.ResizeTo(correctNbins, correctNbins);
     }
@@ -535,29 +535,47 @@ bool MnvUnfold::UnfoldHisto( MnvH1D*& h_unfold, TMatrixD& covmx, const MnvH2D *h
       {
         const TH1D* h_universe = dynamic_cast<const TH1D*>( errBand->GetHist(j) );
         const TH2D* h_migration_universe = dynamic_cast<const TH2D*>( errBand_migration->GetHist(j) );
-        TH1D* h_universe_unfolded = dynamic_cast<TH1D*>( h_unfold->Clone( Form( "%s_unfolded", h_universe->GetName() ) ) );// HMS unsquare
+        TH1D* h_universe_unfolded = dynamic_cast<TH1D*>(  (h_migration_universe->ProjectionY())->Clone( Form( "%s_unfolded", h_universe->GetName() ) ) );
+        //  h_universe_unfolded->Print();
         bool status_universe = UnfoldHisto( h_universe_unfolded, h_migration_universe, h_migration_universe->ProjectionX(), h_migration_universe->ProjectionY(), h_universe, method, regparam);
+          
 #ifdef UNFDBG
-      std::cout << " just unfolded " << h_universe->GetName() << " " << j << " " << status_universe << " " << h_universe_unfolded->GetXaxis()->GetNbins() << " " << h_universe->GetXaxis()->GetNbins() << " " << h_migration_universe->ProjectionY()->GetXaxis()->GetNbins() << std::endl;
-          h_universe_unfolded->Print("ALL");
+          h_universe_unfolded->Print();
+          std::cout << " just unfolded " << h_universe->GetName() << " " << j << " " << status_universe << std::endl;
 #endif
         if (!status_universe)
         {
           Error("MnvUnfold::Unfold", Form("Couldn't unfold Universe %i from VertError: %s",j, vertNames[i].c_str()) );
+            //std::cout << " failure " << std::endl;
           return false; // Must return false or universes will get out of sync
         }
         vert_hists.push_back(h_universe_unfolded);
+         // std::cout << " push_back" << h_universe_unfolded->GetName() << std::endl;
+         // h_universe_unfolded->Print("ALL");
       }
+#ifdef UNFDBB
+        std::cout << " print out the vert bands " << std::endl;
+        for(auto v:vert_hists){
+            v->Print();
+        }
+#endif
       h_unfold->AddVertErrorBand(vertNames[i], vert_hists);
-      //if ( errBand->GetUnivWgts() ) h_unfold->GetVertErrorBand( vertNames[i] )->SetUnivWgts( *errBand->GetUnivWgts() ); // HMS ???
+#ifdef UNFDBG
+        std::cout << " get back the vert bands " << std::endl;
+        for (int j = 0; j != nUniverses; ++j){
+            h_unfold->GetVertErrorBand(vertNames[i])->GetHist(j)->Print();
+        }
+#endif
+      //h_unfold->MnvH1DToCSV(vertNames[i],"./csv",1.0,false,true,false,false);
+      if ( errBand->GetUnivWgts() ) h_unfold->GetVertErrorBand( vertNames[i] )->SetUnivWgts( *errBand->GetUnivWgts() );
 
       //cleaning
       for (std::vector<TH1D*>::iterator itHist = vert_hists.begin() ; itHist != vert_hists.end() ; ++ itHist)
         delete *itHist;
     }
-
-    
-    
+#ifdef UNFDBG
+    h_unfold->MnvH1DToCSV("unfolded_Vert","./csv",1.0,false,true,true,false);
+#endif
     
     //Unfolding and adding Lateral Universes
     std::vector<std::string> latNames = h_data_nobck->GetLatErrorBandNames();
@@ -594,7 +612,7 @@ bool MnvUnfold::UnfoldHisto( MnvH1D*& h_unfold, TMatrixD& covmx, const MnvH2D *h
       {
         const TH1D* h_universe = dynamic_cast<const TH1D*>( errBand->GetHist(j) );
         const TH2D* h_migration_universe = dynamic_cast<const TH2D*>( errBand_migration->GetHist(j) );
-        TH1D* h_universe_unfolded = dynamic_cast<TH1D*>( h_unfold->Clone( Form( "%s_unfolded", h_universe->GetName() ) ) ); // HMS nosquare
+        TH1D* h_universe_unfolded = dynamic_cast<TH1D*>(h_migration_universe->ProjectionY()->Clone( Form( "%s_unfolded", h_universe->GetName() ) ) );
         bool status_universe = UnfoldHisto( h_universe_unfolded, h_migration_universe, h_migration_universe->ProjectionX(), h_migration_universe->ProjectionY(), h_universe, method, regparam);
         if (!status_universe)
         {
@@ -620,8 +638,7 @@ bool MnvUnfold::UnfoldHisto( MnvH1D*& h_unfold, TMatrixD& covmx, const MnvH2D *h
       {
         //unfold the error the same way you do the CV since errors work the same way
         const TH1D *h_errGen = h_data_nobck->GetUncorrError( *iName );
-
-        TH1D *h_errUnfolded = dynamic_cast<TH1D*>( h_unfold->Clone( Form( "%s_unfolded", h_errGen->GetName() ) ) );
+        TH1D *h_errUnfolded = dynamic_cast<TH1D*>( h_errGen->Clone( Form( "%s_unfolded", h_errGen->GetName() ) ) );
         bool foldOK = UnfoldHisto( h_errUnfolded, (const TH2D*)h_migration, h_errGen, method, regparam );
         if( ! foldOK )
         {
@@ -642,6 +659,7 @@ bool MnvUnfold::UnfoldHisto( MnvH1D*& h_unfold, TMatrixD& covmx, const MnvH2D *h
 
   }//end adding systematics
   //  setUseBetterStatErrorCalc(true);//Turn on throwing again
+   
   return status;
 
 }
@@ -1134,9 +1152,9 @@ bool MnvUnfold::UnfoldHisto2D(MnvH2D* &h_unfold, const MnvH2D *h_migration, cons
     int correctNbins=h_unfold->fN;
     int matrixRows=statcov.GetNrows();
     if(correctNbins!=matrixRows){
-            std::cout << "****************************************************************************" << std::endl;
-            std::cout << "*  Fixing 2D unfolding matrix size because of RooUnfold bug. From " << matrixRows << " to " << correctNbins << std::endl;
-            std::cout << "****************************************************************************" << std::endl;
+      //      cout << "****************************************************************************" << endl;
+      //      cout << "*  Fixing unfolding matrix size because of RooUnfold bug. From " << matrixRows << " to " << correctNbins << endl;
+      //      cout << "****************************************************************************" << endl;
       // It looks like this DTRT, since the extra last two bins don't have any content
       statcov.ResizeTo(correctNbins, correctNbins);
     }
@@ -1773,6 +1791,9 @@ bool MnvUnfold::UnfoldVertErrorBands(T* h_unfold, const PlotUtils::MnvH2D* const
       }
       TMatrixD Dummy(1,1);
       bool status_universe = UnfoldHistoWithFakes( h_unfold_universe, Dummy,h_migration_universe, h_data_universe, h_model_reco_universe, h_model_truth_universe, h_model_background_universe, regparam);
+#ifdef UNFDBG
+        h_model_background_universe->Print();
+#endif
       if (!status_universe) {
         Error("MnvUnfold::Unfold", Form("Couldn't unfold Universe %i from VertError: %s",j, errorband_name.c_str()) );
         return false;
