@@ -550,7 +550,7 @@ bool MnvUnfold::UnfoldHisto( MnvH1D*& h_unfold, TMatrixD& covmx, const MnvH2D *h
         vert_hists.push_back(h_universe_unfolded);
       }
       h_unfold->AddVertErrorBand(vertNames[i], vert_hists);
-      //if ( errBand->GetUnivWgts() ) h_unfold->GetVertErrorBand( vertNames[i] )->SetUnivWgts( *errBand->GetUnivWgts() ); // HMS ???
+      if ( errBand->GetUnivWgts() ) h_unfold->GetVertErrorBand( vertNames[i] )->SetUnivWgts( *errBand->GetUnivWgts() ); // HMS ???
 
       //cleaning
       for (std::vector<TH1D*>::iterator itHist = vert_hists.begin() ; itHist != vert_hists.end() ; ++ itHist)
