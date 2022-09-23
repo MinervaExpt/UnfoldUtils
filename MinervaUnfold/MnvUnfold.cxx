@@ -55,7 +55,8 @@ bool MnvUnfold::UnfoldHisto( TH1D*& h_unfold, TMatrixD &covmx, const TH2D* h_mig
   //create the output unfold histogram if needed
   if( 0 == h_unfold )
   {
-    h_unfold = dynamic_cast<TH1D*>( h_data->Clone( Form( "%s_unfold", h_data->GetName() ) ) );
+    // HMS - if this is non-square, you need to use the truth bins for the unfolded size.
+    h_unfold = dynamic_cast<TH1D*>( h_mc_true->Clone( Form( "%s_unfold", h_data->GetName() ) ) );
     h_unfold->SetDirectory(0); //not assigned to a file
   }
   h_unfold->Reset();
@@ -922,7 +923,7 @@ bool MnvUnfold::UnfoldHisto2D( TH2D* &h_unfold, TMatrixD &cov, const TH2D* h_mig
   // Getting the Unfolded Histogram
   //!@todo this is a leak.  Hreco() returns a clone
   h_unfold = dynamic_cast<TH2D*>(unfold->Hreco()->Clone( Form( "%s_unfold", h_data->GetName() ) ));
-
+  
   // Getting Unfolding Covariance Matrix
   cov.ResizeTo(unfold->Ereco());
   cov = unfold->Ereco();
@@ -1078,7 +1079,7 @@ bool MnvUnfold::UnfoldHisto2D(MnvH2D* &h_unfold, const MnvH2D *h_migration, cons
     Error("MnvUnfold::UnfoldHisto2D", " One of the histograms passed has entries in the under/overflow bin, which cannot be unfolded correctly. Use MnvResponse::BringWithinHistLimits() to adjust the x and y values before filling");
     return false;
   }*/
-
+  std::cout << "calling MnvUnfold::UnfoldHisto2D(MnvH2D* &h_unfold, const MnvH2D *h_migration, const MnvH2D *h_mc_reco, const MnvH2D *h_mc_true, const MnvH2D *h_data, const Double_t regparam, bool addSystematics, bool useSysVariatedMigrations ) " << std::endl;
   //! DocDB 8687 and 8773 have more detail on 2D unfolding 
   bool status = false;
   //cv migration matrix
@@ -1103,7 +1104,10 @@ bool MnvUnfold::UnfoldHisto2D(MnvH2D* &h_unfold, const MnvH2D *h_migration, cons
   if (useSysVariatedMigrations)
   {
     const TH2D *h_data_cv = dynamic_cast<const TH2D*>( h_data->GetCVHistoWithStatError().Clone( h_data->GetName() ) );
-    TH2D *h_cv = NULL;
+    // HMS make this work for asymmetric reco/truth binning
+    TH2D *h_cv = dynamic_cast<TH2D*>( h_mc_true->GetCVHistoWithStatError().Clone( h_data->GetName() ) );
+    //TH2D *h_cv = NULL;
+    
     //! Filling the CV
     status = UnfoldHisto2D(h_cv, statcov, h_migration_cv, h_reco_cv, h_truth_cv, h_data_cv, regparam);
 
@@ -1112,8 +1116,8 @@ bool MnvUnfold::UnfoldHisto2D(MnvH2D* &h_unfold, const MnvH2D *h_migration, cons
       Error("MinervaUnfold::unfoldHisto2D","Coudln't unfold the central value");
       return status;
     }
-    h_unfold = new MnvH2D( h_data->GetCVHistoWithStatError() );
-    //h_unfold->Reset();
+    h_unfold = new MnvH2D( h_mc_true->GetCVHistoWithStatError() );
+    h_unfold->Reset();
 
     //!@todo check whether to include under/overflow or not
     Int_t cvbins = h_cv->GetBin( h_cv->GetNbinsX() + 1, h_cv->GetNbinsY() + 1 ) ; //including overflow
@@ -1193,7 +1197,7 @@ bool MnvUnfold::UnfoldHisto2D(MnvH2D* &h_unfold, const MnvH2D *h_migration, cons
         const TH2D* h_reco_universe = dynamic_cast<const TH2D*>( errBand_reco->GetHist(j) );
         const TH2D* h_truth_universe = dynamic_cast<const TH2D*>( errBand_truth->GetHist(j) );
 
-        TH2D* h_universe_unfolded = NULL;
+        TH2D* h_universe_unfolded = dynamic_cast< TH2D*>( errBand_truth->GetHist(j)->Clone(h_universe->GetName()) );
         bool status_universe = UnfoldHisto2D( h_universe_unfolded, h_migration_universe, h_reco_universe, h_truth_universe, h_universe, regparam );
 
         if (!status_universe)
