@@ -195,9 +195,9 @@ void MnvResponse::Setup(const char* name, const char* title, PlotUtils::axis_bin
   is1D();
 
    for(itr = error_bands.begin();itr!=error_bands.end();++itr){
-  //  std::string name = itr->first;
+    std::string Errorname = itr->first;
+    if (Errorname=="CV" ||  Errorname =="cv")continue;
     const int nhists = itr->second;
-  //  if (name=="CV" or name=="cv")continue;
     AddVertErrorBand(itr->first, nhists);
   //  std::cout<<"MnvResponse: Added VertErrorBand "<<itr->first<<std::endl;
 
@@ -233,11 +233,9 @@ void MnvResponse::Setup(const char* name, const char* title, const Int_t reco_nb
   if(error_bands.size()==0)return;
   std::map<std::string,int>::iterator itr;
   for(itr = error_bands.begin();itr!=error_bands.end();++itr){
-    //  std::string name = itr->first;
+      std::string Errorname = itr->first;
     const int nhists = itr->second;
-    //if (name=="CV" or name=="cv")continue;
-    if(strcmp("CV",name)==0) continue;
-    if(strcmp("cv",name)==0) continue;
+    if (Errorname=="CV" ||  Errorname =="cv")continue;
     AddVertErrorBand(itr->first, nhists);
     //std::cout<<"MnvResponse: Added VertErrorBand "<<itr->first<<std::endl;
 
@@ -330,8 +328,8 @@ void MnvResponse::Setup(const char* name, const char* title, PlotUtils::axis_bin
     // std::map<std::string,int>::iterator itr;
 
    for(itr = error_bands.begin();itr!=error_bands.end();++itr){
-
- //   if (name=="CV" or name=="cv")continue;
+     std::string Errorname = itr->first;
+    if (Errorname=="CV" ||  Errorname =="cv")continue;
    // std::cout<<"MnvResponse Adding Vert error band "<<itr->first<<std::endl;
     AddVertErrorBand(itr->first, itr->second);
 
@@ -397,12 +395,10 @@ void MnvResponse::Setup(const char* name, const char* title, const Int_t nbinsx_
   Setup(name,title,  nbinsx_reco,  xbins_reco,  nbinsy_reco,  ybins_reco,  nbinsx_truth,  xbins_truth,  nbinsy_truth,  ybins_truth);
 
    for(itr = error_bands.begin();itr!=error_bands.end();++itr){
-     //   if (name=="CV" or name=="cv")continue;
      // std::cout<<"MnvResponse Adding Vert error band "<<itr->first<<std::endl;
+    std::string Errorname = itr->first;	
+    if (Errorname=="CV" ||  Errorname =="cv")continue;
      AddVertErrorBand(itr->first, itr->second);
-
-     //  }
-
    }
 
   return;
@@ -599,22 +595,23 @@ Int_t MnvResponse::Fill( double meas, double truth,std::string error_name,const 
     return -2;
   }
 
-   fReco1D->GetVertErrorBand(error_name)->GetHist(univ)->Fill(meas, w);
-   fTruth1D->GetVertErrorBand(error_name)->GetHist(univ)->Fill(truth, w);
 
    Double_t hBinX = fMigration->GetXaxis()->GetBinCenter(RooUnfoldResponse::FindBin (fReco1D, meas)+1) ;
     Double_t hBinY = fMigration->GetYaxis()->GetBinCenter(RooUnfoldResponse::FindBin (fTruth1D, truth)+1) ;
 
 
-   Int_t nbins = fMigration->GetVertErrorBand(error_name)->GetHist(univ)->Fill(hBinX, hBinY, w);
+  // Int_t nbins = fMigration->GetVertErrorBand(error_name)->GetHist(univ)->Fill(hBinX, hBinY, w);
 
     if(error_name=="CV"||error_name=="cv"){
       fReco1D->Fill(meas,w);
       fTruth1D->Fill(truth,w);
       fMigration->Fill(hBinX, hBinY,w);
-
+     }
+   else{
+    fMigration->GetVertErrorBand(error_name)->GetHist(univ)->Fill(hBinX, hBinY, w);
+    fReco1D->GetVertErrorBand(error_name)->GetHist(univ)->Fill(meas, w);
+    fTruth1D->GetVertErrorBand(error_name)->GetHist(univ)->Fill(truth, w);
    }
-
 
   return 1;
 }
@@ -662,25 +659,20 @@ Int_t MnvResponse::Fill( double meas_x, double meas_y, double truth_x, double tr
     return -2;
   }
 
-
-
-
-   fReco2D->GetVertErrorBand(error_name)->GetHist(univ)->Fill(meas_x, meas_y, w);
-   fTruth2D->GetVertErrorBand(error_name)->GetHist(univ)->Fill(truth_x, truth_y, w);
-
     Double_t hBinX = fMigration->GetXaxis()->GetBinCenter(RooUnfoldResponse::FindBin (fReco2D, meas_x, meas_y)+1) ;
     Double_t hBinY = fMigration->GetYaxis()->GetBinCenter(RooUnfoldResponse::FindBin (fTruth2D, truth_x, truth_y)+1) ;
-
-
-   Int_t nbins = fMigration->GetVertErrorBand(error_name)->GetHist(univ)->Fill(hBinX, hBinY, w);
+    Int_t nbins;
 
     if(error_name=="CV"||error_name=="cv"){
      fReco2D->Fill(meas_x,meas_y,w);
      fTruth2D->Fill(truth_x,truth_y,w);
-     fMigration->Fill(hBinX, hBinY,w);
-
+     nbins = fMigration->Fill(hBinX, hBinY,w);
    }
-
+   else {
+     fReco2D->GetVertErrorBand(error_name)->GetHist(univ)->Fill(meas_x, meas_y, w);
+     fTruth2D->GetVertErrorBand(error_name)->GetHist(univ)->Fill(truth_x, truth_y, w);
+     nbins = fMigration->GetVertErrorBand(error_name)->GetHist(univ)->Fill(hBinX, hBinY, w);
+   }
 
 
 
