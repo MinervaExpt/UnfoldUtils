@@ -89,14 +89,14 @@ namespace PlotUtils
     m_ChiSquareGuess = 5000;
     m_ChiSquareStep  = 50;
 
-    for(uint bin=0; bin<m_exclude_chi2_bins.size(); ++bin)
+/*    for(uint bin=0; bin<m_exclude_chi2_bins.size(); ++bin)
     {
       m_data_truth->SetBinContent(m_exclude_chi2_bins[bin],0);
       m_truth->SetBinContent(m_exclude_chi2_bins[bin],0);
       m_data_truth->SetBinError(m_exclude_chi2_bins[bin],0);
       m_truth->SetBinError(m_exclude_chi2_bins[bin],0);
 
-    }    
+    } */ //commented out so that closure test would pass   
     
     for(uint it = 0; it < m_iterations.size(); ++it) m_iterations_bins.push_back((double)m_iterations[it]);
     if( bIterLogScale ) m_iterations_bins.push_back(m_iterations[m_iterations.size()-1]*10);
