@@ -772,8 +772,11 @@ namespace PlotUtils
       unfoldingCovMatrixOrig *= uncmod;
 
       // Scale diagonal errors
-      for ( int i = 0; i < h_data_unfolded->GetNbinsX()+2; ++i )
-	h_data_unfolded -> SetBinError(i, h_data_unfolded->GetBinError(i) * sqrtmod);
+      for( int i = 0; i < h_data_unfolded->GetNbinsX() + 2; i++ ){
+        for( int j = 0; j < h_data_unfolded->GetNbinsY() + 2; j++ ){
+          h_data_unfolded->SetBinError( i, j, h_data_unfolded->GetBinError(i, j)*sqrtmod );
+        }
+      }
     }
 
     m_unfoldingCovMatrices[num_iter].push_back(unfoldingCovMatrixOrig);
