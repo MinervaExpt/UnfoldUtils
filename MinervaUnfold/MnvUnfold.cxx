@@ -7,7 +7,9 @@
 //RooUnfold dependencies
 #include "RooUnfold/RooUnfoldBayes.h"
 #include "RooUnfold/RooUnfoldSvd.h"
+#ifndef NOTUNFOLD
 #include "RooUnfold/RooUnfoldTUnfold.h"
+#endif
 #include "RooUnfold/RooUnfoldInvert.h"
 #include "RooUnfold/RooUnfoldBinByBin.h"
 #include "RooUnfold/RooUnfold.h"
