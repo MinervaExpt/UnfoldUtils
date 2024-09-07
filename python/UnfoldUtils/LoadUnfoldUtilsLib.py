@@ -1,26 +1,40 @@
 """
   LoadUnfoldUtilsLib.py:
-   The code necessary to load the libUnfoldUtils.so library
-   so that UnfoldUtils C++ objects are available.
-   
-   This is cribbed directly from the corresponding module
-   in Ana/PlotUtils/python/PlotUtils.
+   The code necessary to load the libplotutils.so library
+   so that PlotUtils C++ objects are available.
   
    Original author: J. Wolcott (jwolcott@fnal.gov)
-                    June 2014
+                    November 2012
 """
+
+# hms 2021-11-20 comment out classes that moved to MAT-MINERvA
+# to use this you need to
+# export PYTHONPATH=$WHEREMATIS/MAT/python:$WHEREMATIS/MAT/python/PlotUtils
 
 import sys
 import os
 
 import ROOT
-import os,sys
-if os.getenv("UNFOLDUTILSVERSION")=="ROOT6":
-        print "ROOT6"
-else:
-        import PyCintex
-#import PyCintex # needed to properly load the Reflex dictionary
 
+# List of classes to copy from the Reflex library into the "PlotUtils" namespace
+CLASSES_TO_LOAD = [
+# from UnfoldUtils
+    "MnvResponse",
+    "MnvUnfold"
+]
+
+# new code for ROOT6
+if os.getenv("PLOTUTILSVERSION")=="ROOT6":
+# replace with voodoo found at https://gitlab.cern.ch/clemenci/Gaudi/commit/47772dfbb429a1392e12143403314e0abb45322d
+    try:
+        import PyCintex # needed to enable Cintex if it exists
+        del PyCintex
+    except ImportError:
+        pass
+else:
+    import PyCintex
+
+#import PlotUtils
 import UnfoldUtils
 
 # the ROOT interpreter gobbles up any arguments
@@ -30,15 +44,16 @@ args = sys.argv[:]
 sys.argv = sys.argv[:0]
 
 if "UNFOLDUTILSROOT" in os.environ:
-	ROOT.gSystem.Load("libUnfoldUtils")
+  #ROOT.gSystem.Load("libMAT")
+  ROOT.gSystem.Load("libUnfoldUtils")
 
 	# copy the classes from the Reflex library
-	# into the "UnfoldUtils" namespace for more
+	# into the "PlotUtils" namespace for more
 	# straightforward access.
-	for cls in [ "MnvUnfold", "MnvResponse" ]:
-		setattr(UnfoldUtils, cls, getattr(ROOT.MinervaUnfold, cls))
+  for cls in CLASSES_TO_LOAD:
+    setattr(UnfoldUtils, cls, getattr(ROOT.MinervaUnfold, cls))
 else:
-	print >> sys.stderr, "Note: $UNFOLDUTILSROOT is not defined in the current environment.  UnfoldUtils libraries were not loaded."
+	print >> sys.stderr, "Note: $UNFOLDUTILSROOT is not defined in the current environment.  PlotUtils libraries were not loaded."
 	
 # now that ROOT has done its thing,
 # we can restore the arguments...
