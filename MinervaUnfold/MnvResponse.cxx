@@ -281,7 +281,7 @@ void MnvResponse::Setup(const char* name, const char* title, TH2D* MCReco, TH2D*
 
 void MnvResponse::Setup(const char* name, const char* title, PlotUtils::axis_binning x_reco, PlotUtils::axis_binning y_reco, PlotUtils::axis_binning x_truth, PlotUtils::axis_binning y_truth)
 {
-  Double_t x_recobins[x_reco.nbins], y_recobins[y_reco.nbins], x_truthbins[x_truth.nbins], y_truthbins[y_truth.nbins];
+  Double_t x_recobins[x_reco.nbins+1], y_recobins[y_reco.nbins+1], x_truthbins[x_truth.nbins+1], y_truthbins[y_truth.nbins+1];
   for( unsigned int i = 0; i <= x_reco.nbins; i++ )
     x_recobins[i] = x_reco.bin_edges[i];
   for( unsigned int i = 0; i <= y_reco.nbins; i++ )
@@ -306,7 +306,7 @@ void MnvResponse::Setup(const char* name, const char* title, PlotUtils::axis_bin
 void MnvResponse::Setup(const char* name, const char* title, PlotUtils::axis_binning x_reco, PlotUtils::axis_binning y_reco, PlotUtils::axis_binning x_truth, PlotUtils::axis_binning y_truth,std::map<const std::string,  int>&error_bands)
 {
   //std::cout<<"MnvResponse Setup called "<<std::endl;
-  Double_t x_recobins[x_reco.nbins], y_recobins[y_reco.nbins], x_truthbins[x_truth.nbins], y_truthbins[y_truth.nbins];
+  Double_t x_recobins[x_reco.nbins+1], y_recobins[y_reco.nbins+1], x_truthbins[x_truth.nbins+1], y_truthbins[y_truth.nbins+1];
   for( unsigned int i = 0; i <= x_reco.nbins; i++ )
     x_recobins[i] = x_reco.bin_edges[i];
   for( unsigned int i = 0; i <= y_reco.nbins; i++ )
