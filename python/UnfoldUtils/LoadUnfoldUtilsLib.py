@@ -19,8 +19,20 @@ import ROOT
 # List of classes to copy from the Reflex library into the "PlotUtils" namespace
 CLASSES_TO_LOAD = [
 # from UnfoldUtils
-    "MnvResponse",
-    "MnvUnfold"
+  "MnvResponse",
+  "MnvUnfold"
+]
+CLASSES_TO_LOAD2 = [
+  "RooUnfold" ,
+  #"RooUnfoldBayes" ,  # not found? 
+  #"RooUnfoldBinByBin" ,
+  #"RooUnfoldDagostini" ,# commented out in the dict file
+  #"RooUnfoldErrors" ,
+  #"RooUnfoldInvert" ,
+  #"RooUnfoldParms" ,
+  #"RooUnfoldResponse" ,
+  #"RooUnfoldSvd" ,
+  #"RooUnfoldTUnfold" ,
 ]
 
 # new code for ROOT6
@@ -52,8 +64,12 @@ if "UNFOLDUTILSROOT" in os.environ:
 	# straightforward access.
   for cls in CLASSES_TO_LOAD:
     setattr(UnfoldUtils, cls, getattr(ROOT.MinervaUnfold, cls))
+  else:
+	  print ( sys.stderr, "Note: $UNFOLDUTILSROOT is not defined in the current environment.  PlotUtils libraries were not loaded.")
+  for cls in CLASSES_TO_LOAD2:
+    setattr(UnfoldUtils, cls, getattr(ROOT.RooUnfold, cls))
 else:
-	print >> sys.stderr, "Note: $UNFOLDUTILSROOT is not defined in the current environment.  PlotUtils libraries were not loaded."
+	print ( sys.stderr, "Note: $UNFOLDUTILSROOT is not defined in the current environment.  PlotUtils libraries were not loaded.")
 	
 # now that ROOT has done its thing,
 # we can restore the arguments...
