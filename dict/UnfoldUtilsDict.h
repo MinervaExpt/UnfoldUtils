@@ -28,6 +28,7 @@
 #include "RooUnfold/RooUnfoldResponse.h"
 #include "RooUnfold/RooUnfoldSvd.h"
 #include "RooUnfold/RooUnfoldTUnfold.h"
+#include "RooUnfold/TUnfold.h"
 
 #include "MinervaUnfold/MnvUnfold.h"
 #include "MinervaUnfold/MnvResponse.h"

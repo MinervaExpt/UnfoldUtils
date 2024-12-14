@@ -12,6 +12,8 @@
 #ifndef ROOUNFOLDTUNFOLD_H_
 #define ROOUNFOLDTUNFOLD_H_
 
+#define NOTUNFOLDSYS 1
+
 #include "RooUnfold.h"
 #include "TUnfold.h"
 

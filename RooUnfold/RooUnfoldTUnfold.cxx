@@ -23,7 +23,7 @@ if v15 of TUnfold is used. ROOT versions 5.26 or below use v13 and so should be 
 END_HTML */
 
 /////////////////////////////////////////////////////////////
-
+#define NOTUNFOLDSYS 1
 #include "RooUnfoldTUnfold.h"
 
 #include <iostream>

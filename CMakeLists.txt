@@ -103,6 +103,8 @@ RooUnfold/RooUnfoldSvd.cxx
 RooUnfold/RooUnfoldTUnfold.cxx
 RooUnfold/TSVDUnfold.cxx
 RooUnfold/matrix_mult_mt.cxx
+RooUnfold/TUnfold.cxx
+#RooUnfold/TUnfoldSys.cxx
 )
 
 # tell it about the header files
@@ -126,6 +128,8 @@ RooUnfold/RooUnfoldTUnfold.h
 #RooUnfold/RooUnfold_LinkDef.h
 RooUnfold/TSVDUnfold_local.h
 RooUnfold/matrix_mult_mt.h
+RooUnfold/TUnfold.h
+#RooUnfold/TUnfoldSys.h
 )
 
 #Include build system for the rest of this project.  Add new top-level directories here.
