@@ -93,6 +93,7 @@ MinervaUnfold/MnvResponse.cxx
 MinervaUnfold/MnvUnfold.cxx
 MinervaUnfold/UnfoldCovmxAsErrorBand.cxx
 RooUnfold/RooUnfold.cxx
+RooUnfold/TUnfold.cxx
 RooUnfold/RooUnfoldBayes.cxx
 RooUnfold/RooUnfoldBinByBin.cxx
 RooUnfold/RooUnfoldErrors.cxx
@@ -115,6 +116,7 @@ MinervaUnfold/UnfoldCovmxAsErrorBand.h
 
 set(ROO_HEADER_FILES
 RooUnfold/RooUnfold.h
+RooUnfold/TUnfold.h
 RooUnfold/RooUnfoldBayes.h
 RooUnfold/RooUnfoldBinByBin.h
 RooUnfold/RooUnfoldErrors.h

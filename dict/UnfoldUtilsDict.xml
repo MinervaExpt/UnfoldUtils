@@ -1,6 +1,7 @@
 <lcgdict>
 	<!-- RooUnfold objects -->
 	<class name="RooUnfold" />
+	<class name="TUnfold" />
 	<class name="RooUnfoldBayes" />
 	<class name="RooUnfoldBinByBin" />
 <!--	<class name="RooUnfoldDagostini" />-->

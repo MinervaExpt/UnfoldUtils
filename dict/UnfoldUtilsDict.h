@@ -18,9 +18,10 @@
 
 #include <vector>
 
-#include "RooUnfold/RooUnfold.h"
+#include "RooUnfold/TUnfold.h"
 #include "RooUnfold/RooUnfoldBayes.h"
 #include "RooUnfold/RooUnfoldBinByBin.h"
+#include "RooUnfold/RooUnfoldTUnfold.h"
 //#include "../RooUnfold/RooUnfoldDagostini.h"  # isn't built by default in RooUnfold anyhow
 #include "RooUnfold/RooUnfoldErrors.h"
 #include "RooUnfold/RooUnfoldInvert.h"
