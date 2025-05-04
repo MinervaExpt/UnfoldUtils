@@ -54,9 +54,12 @@ import UnfoldUtils
 # we need to tuck them away for later.
 args = sys.argv[:]
 sys.argv = sys.argv[:0]
-
+for key,value in os.environ.items():
+    print ("env",key,value)
+    
 if "UNFOLDUTILSROOT" in os.environ:
   #ROOT.gSystem.Load("libMAT")
+  print ("got the envorinmental")  
   ROOT.gSystem.Load("libUnfoldUtils")
 
 	# copy the classes from the Reflex library
@@ -64,8 +67,8 @@ if "UNFOLDUTILSROOT" in os.environ:
 	# straightforward access.
   for cls in CLASSES_TO_LOAD:
     setattr(UnfoldUtils, cls, getattr(ROOT.MinervaUnfold, cls))
-  else:
-	  print ( sys.stderr, "Note: $UNFOLDUTILSROOT is not defined in the current environment.  PlotUtils libraries were not loaded.")
+  # else:
+	#   print ( sys.stderr, "Note: $UNFOLDUTILSROOT is not defined in the current environment.  PlotUtils libraries were not loaded.")
   for cls in CLASSES_TO_LOAD2:
     setattr(UnfoldUtils, cls, getattr(ROOT.RooUnfold, cls))
 else:
