@@ -80,7 +80,7 @@ find_package(MAT-MINERvA REQUIRED)
 include_directories(${MAT-MINERvA_INCLUDE_DIR})
 
 #From Heidi: put some special flags here forgot what the DBUILD_SHARED_LIBS=OFF does..
-add_definitions(-DFORM "-DBUILD_SHARED_LIBS=OFF")
+add_definitions(-DFORM "-DBUILD_SHARED_LIBS=OFF" -DNOTUNFOLD)
 
 #From Heidi: do this or mac will make it dylib
 set(CMAKE_SHARED_LIBRARY_SUFFIX ".so")
@@ -100,7 +100,7 @@ RooUnfold/RooUnfoldInvert.cxx
 RooUnfold/RooUnfoldParms.cxx
 RooUnfold/RooUnfoldResponse.cxx
 RooUnfold/RooUnfoldSvd.cxx
-RooUnfold/RooUnfoldTUnfold.cxx
+#RooUnfold/RooUnfoldTUnfold.cxx
 RooUnfold/TSVDUnfold.cxx
 RooUnfold/matrix_mult_mt.cxx
 )
@@ -122,7 +122,7 @@ RooUnfold/RooUnfoldInvert.h
 RooUnfold/RooUnfoldParms.h
 RooUnfold/RooUnfoldResponse.h
 RooUnfold/RooUnfoldSvd.h
-RooUnfold/RooUnfoldTUnfold.h
+#RooUnfold/RooUnfoldTUnfold.h
 #RooUnfold/RooUnfold_LinkDef.h
 RooUnfold/TSVDUnfold_local.h
 RooUnfold/matrix_mult_mt.h
@@ -131,7 +131,7 @@ RooUnfold/matrix_mult_mt.h
 #Include build system for the rest of this project.  Add new top-level directories here.
 #First, build a ROOT dictionary
 #I modified this dictionary generation code from Heidi's CMakeLists.txt
-REFLEX_GENERATE_DICTIONARY(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/dict/${PROJECT_NAME}Dict.h SELECTION ${CMAKE_CURRENT_SOURCE_DIR}/dict/${PROJECT_NAME}Dict.xml OPTIONS -D__GCC_XML__ --noIncludePaths)
+REFLEX_GENERATE_DICTIONARY(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/dict/${PROJECT_NAME}Dict.h SELECTION ${CMAKE_CURRENT_SOURCE_DIR}/dict/${PROJECT_NAME}Dict.xml OPTIONS -D__GCC_XML__ --noIncludePaths -DNOTUNFOLD)
 
 #install the dictionary files ROOT generates where LD_LIBRARY_PATH can find them
 #(after sourcing setup.sh of course)

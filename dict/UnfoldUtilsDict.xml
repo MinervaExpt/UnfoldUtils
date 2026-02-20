@@ -9,7 +9,7 @@
 	<class name="RooUnfoldParms" />
 	<class name="RooUnfoldResponse" />
 	<class name="RooUnfoldSvd" />
-	<class name="RooUnfoldTUnfold" />
+	<!-- <class name="RooUnfoldTUnfold" /> -->
 
 
 	<!-- MinervaUnfold objects -->
